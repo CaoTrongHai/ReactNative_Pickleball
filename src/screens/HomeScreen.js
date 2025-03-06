@@ -44,8 +44,28 @@ const HomeScreen = ({ navigation }) => {
     );
   }
 
+  // const renderCategoryItem = ({ item }) => (
+  //   <TouchableOpacity style={styles.categoryItem}>
+  //     <Image
+  //       source={{
+  //         uri: item.image.startsWith("/images/")
+  //           ? `${BASE_URL}${item.image}`
+  //           : item.image,
+  //       }}
+  //       style={styles.categoryImage}
+  //     />
+  //     <Text style={styles.categoryText}>{item.name}</Text>
+  //   </TouchableOpacity>
+  // );
+
   const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity style={styles.categoryItem}>
+    <TouchableOpacity
+      style={styles.categoryItem}
+      onPress={() => {
+        console.log("Navigating to CategoryProducts with ID:", item._id);
+        navigation.navigate("CategoryProducts", { categoryId: item._id });
+      }}
+    >
       <Image
         source={{
           uri: item.image.startsWith("/images/")

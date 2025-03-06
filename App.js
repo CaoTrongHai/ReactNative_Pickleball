@@ -11,7 +11,9 @@ import Footer from "../my-app/src/components/Footer";
 import ContactScreen from "./src/screens/ContactScreen";
 import "leaflet/dist/leaflet.css";
 import AboutUsScreen from "./src/screens/AboutUsScreen";
-
+import CategoryProductsScreen from "./src/screens/CategoryProductScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
+import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -55,6 +57,21 @@ const App = () => {
               name="About"
               component={AboutUsScreen}
               options={{ title: "Giới thiệu", headerShown: false }}
+            />
+            <Stack.Screen
+              name="CategoryProducts"
+              component={CategoryProductsScreen}
+              options={{ title: "Sản phẩm" }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: "Hồ sơ" }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPasswordScreen}
+              options={{ title: "Quên mật khẩu" }}
             />
           </Stack.Navigator>
         </View>
