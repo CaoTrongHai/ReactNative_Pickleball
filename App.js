@@ -14,6 +14,7 @@ import AboutUsScreen from "./src/screens/AboutUsScreen";
 import CategoryProductsScreen from "./src/screens/CategoryProductScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
+import CartScreen from "./src/screens/CartScreen";
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -72,6 +73,11 @@ const App = () => {
               name="ResetPassword"
               component={ResetPasswordScreen}
               options={{ title: "Quên mật khẩu" }}
+            />
+            <Stack.Screen
+              name="Cart"
+              component={CartScreen}
+              options={{ title: "Giỏ hàng" }}
             />
           </Stack.Navigator>
         </View>

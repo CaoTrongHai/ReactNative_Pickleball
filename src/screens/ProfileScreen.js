@@ -13,7 +13,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -141,6 +141,14 @@ const ProfileScreen = () => {
               <Text style={styles.buttonText}>Chỉnh sửa</Text>
             </TouchableOpacity>
           )}
+
+          {/* Nút xem giỏ hàng */}
+          <TouchableOpacity
+            style={[styles.button, styles.cartButton]}
+            onPress={() => navigation.navigate("Cart")}
+          >
+            <Text style={styles.buttonText}>🛒 Xem Giỏ Hàng</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
@@ -161,8 +169,26 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  profileHeader: { alignItems: "center", marginBottom: 30 },
-  avatar: { width: 120, height: 120, borderRadius: 60, marginBottom: 15 },
+  profileHeader: {
+    alignItems: "center",
+    marginBottom: 30,
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+    borderWidth: 3,
+    borderColor: "#6200ee",
+  },
   username: { fontSize: 24, fontWeight: "bold", color: "#333" },
   profileInfo: { width: "100%" },
   input: {
@@ -181,6 +207,10 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom: 10,
+  },
+  cartButton: {
+    backgroundColor: "#ff9800", // Màu cam nổi bật
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   errorText: { fontSize: 16, color: "#ff4444" },

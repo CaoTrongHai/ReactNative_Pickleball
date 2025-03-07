@@ -8,6 +8,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  Modal,
+  TextInput,
 } from "react-native";
 import axios from "axios";
 
@@ -16,8 +18,11 @@ const BASE_URL = "http://localhost:9999";
 const CategoryProductsScreen = ({ route, navigation }) => {
   const { categoryId } = route.params;
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [filterPrice, setFilterPrice] = useState("");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -26,6 +31,7 @@ const CategoryProductsScreen = ({ route, navigation }) => {
         `${BASE_URL}/products/category/${categoryId}`
       );
       setProducts(response.data || []);
+      setFilteredProducts(response.data || []);
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm:", error);
     } finally {
@@ -43,6 +49,14 @@ const CategoryProductsScreen = ({ route, navigation }) => {
     setRefreshing(false);
   };
 
+  const applyFilter = () => {
+    const filtered = products.filter(
+      (item) => filterPrice === "" || item.price <= parseFloat(filterPrice)
+    );
+    setFilteredProducts(filtered);
+    setModalVisible(false);
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -54,11 +68,17 @@ const CategoryProductsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Sản phẩm theo danh mục</Text>
-      {products.length === 0 ? (
+      <TouchableOpacity
+        style={styles.filterButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.filterButtonText}>Lọc sản phẩm</Text>
+      </TouchableOpacity>
+      {filteredProducts.length === 0 ? (
         <Text style={styles.noData}>Không có sản phẩm nào.</Text>
       ) : (
         <FlatList
-          data={products}
+          data={filteredProducts}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.productItem}>
@@ -88,6 +108,28 @@ const CategoryProductsScreen = ({ route, navigation }) => {
           }
         />
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Lọc theo giá</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nhập giá tối đa"
+              keyboardType="numeric"
+              value={filterPrice}
+              onChangeText={setFilterPrice}
+            />
+            <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
+              <Text style={styles.applyButtonText}>Áp dụng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -134,6 +176,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   detailButtonText: { color: "#fff", fontWeight: "bold" },
+  filterButton: {
+    backgroundColor: "#28a745",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  filterButtonText: { color: "#fff", fontWeight: "bold" },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  input: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  applyButton: {
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+  },
+  applyButtonText: { color: "#fff", fontWeight: "bold" },
 });
 
 export default CategoryProductsScreen;
