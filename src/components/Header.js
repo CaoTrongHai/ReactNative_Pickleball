@@ -20,6 +20,7 @@ const Header = () => {
   const handleLogout = async () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("username");
+    await AsyncStorage.removeItem("userId");
     setUsername(null);
     navigation.reset({
       index: 0,

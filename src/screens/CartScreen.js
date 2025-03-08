@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -16,40 +17,60 @@ const CartScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCartWithProducts = async () => {
-      try {
-        const userId = await AsyncStorage.getItem("userId");
-        if (!userId) throw new Error("Không tìm thấy ID người dùng");
-
-        const cartResponse = await axios.get(
-          `http://localhost:9999/carts/${userId}`
-        );
-        const cartData = cartResponse.data.data.items || [];
-
-        const productDetailsPromises = cartData.map((item) =>
-          axios.get(`http://localhost:9999/products/${item.productId}`)
-        );
-
-        const productResponses = await Promise.all(productDetailsPromises);
-
-        const updatedCartItems = cartData.map((item, index) => ({
-          ...item,
-          name: productResponses[index].data.data.name,
-        }));
-
-        setCartItems(updatedCartItems);
-      } catch (error) {
-        console.error("Lỗi khi lấy giỏ hàng:", error);
-        Alert.alert("Lỗi", "Không thể tải giỏ hàng");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCartWithProducts();
+    fetchCart();
   }, []);
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const fetchCart = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) throw new Error("Không tìm thấy ID người dùng");
+
+      const cartResponse = await axios.get(
+        `http://localhost:9999/carts/${userId}`
+      );
+      const cartData = cartResponse.data.data.items || [];
+
+      const productDetailsPromises = cartData.map((item) =>
+        axios.get(`http://localhost:9999/products/${item.productId}`)
+      );
+
+      const productResponses = await Promise.all(productDetailsPromises);
+
+      const updatedCartItems = cartData.map((item, index) => ({
+        ...item,
+        name: productResponses[index].data.data.name,
+      }));
+
+      setCartItems(updatedCartItems);
+    } catch (error) {
+      console.error("Lỗi khi lấy giỏ hàng:", error);
+      Alert.alert("Lỗi", "Không thể tải giỏ hàng");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateCartItem = async (productId, newQuantity) => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) throw new Error("Không tìm thấy ID người dùng");
+
+      const response = await axios.put(
+        `http://localhost:9999/carts/${userId}/update`,
+        {
+          productId,
+          quantity: newQuantity,
+        }
+      );
+
+      if (response.status === 200) {
+        fetchCart(); // Cập nhật lại giỏ hàng sau khi cập nhật thành công
+      }
+    } catch (error) {
+      console.error("Lỗi cập nhật giỏ hàng:", error);
+      Alert.alert("Lỗi", "Không thể cập nhật giỏ hàng");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -83,12 +104,25 @@ const CartScreen = ({ navigation }) => {
                 Số lượng: {item.quantity}
               </Text>
             </View>
+
+            <View style={styles.buttonGroup}>
+              <Button
+                title="-"
+                onPress={() =>
+                  item.quantity > 1
+                    ? updateCartItem(item.productId, item.quantity - 1)
+                    : updateCartItem(item.productId, 0)
+                }
+              />
+              <Button
+                title="+"
+                onPress={() =>
+                  updateCartItem(item.productId, item.quantity + 1)
+                }
+              />
+            </View>
           </View>
         ))}
-
-        <Text style={styles.totalPriceText}>
-          Tổng tiền: {totalPrice.toLocaleString()} đ
-        </Text>
 
         <TouchableOpacity
           style={styles.checkoutButton}
@@ -128,6 +162,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   productInfo: { flex: 1, justifyContent: "center" },
   productName: { fontSize: 18, fontWeight: "bold", color: "#333" },
@@ -148,6 +185,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   checkoutText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  buttonGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
 });
 
 export default CartScreen;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,19 +8,62 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
+import axios from "axios";
 
 const BASE_URL = "http://localhost:9999";
-const { width } = Dimensions.get("window"); // Lấy chiều rộng màn hình
+const { width } = Dimensions.get("window");
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { product } = route.params;
+  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
 
-  // Hàm render ảnh trong carousel
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const id = await AsyncStorage.getItem("userId");
+      setUserId(id);
+    };
+    fetchUserId();
+  }, []);
+
+  const addToCart = async () => {
+    if (!userId) {
+      setMessage({
+        type: "error",
+        text: "⚠ Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.post(`${BASE_URL}/carts/${userId}/add`, {
+        productId: product._id,
+        quantity: 1,
+      });
+
+      setMessage({
+        type: "success",
+        text: "🛒 Sản phẩm đã được thêm vào giỏ hàng!",
+      });
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: "❌ Không thể thêm vào giỏ hàng. Vui lòng thử lại!",
+      });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
+
   const renderImage = ({ item }) => {
     if (!item) return null;
-
     const imageUrl = typeof item === "string" ? item : item?.url;
     if (!imageUrl) return null;
 
@@ -41,7 +84,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Carousel hiển thị 3 ảnh */}
       <FlatList
         data={product.images.slice(0, 3)}
         renderItem={renderImage}
@@ -52,7 +94,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
         style={styles.carousel}
       />
 
-      {/* Thông tin sản phẩm */}
       <View style={styles.productInfo}>
         <Text style={styles.title}>
           <MaterialIcons name="sports-tennis" size={22} color="#ff8c00" />{" "}
@@ -73,15 +114,38 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
         <Text style={styles.price}>${product.price}</Text>
 
-        {/* Nút Thêm vào giỏ hàng */}
+        {message && (
+          <View
+            style={[
+              styles.messageBox,
+              message.type === "success" ? styles.successBox : styles.errorBox,
+            ]}
+          >
+            <Text style={styles.messageText}>{message.text}</Text>
+          </View>
+        )}
+
         <TouchableOpacity
           style={styles.button}
-          onPress={() => alert("Thêm vào giỏ hàng thành công!")}
+          onPress={addToCart}
+          disabled={loading}
         >
-          <Text style={styles.buttonText}>🛒 Thêm vào giỏ hàng</Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>🛒 Thêm vào giỏ hàng</Text>
+          )}
         </TouchableOpacity>
 
-        {/* Nút Quay lại */}
+        {!userId && (
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => navigation.navigate("Login")}
+          >
+            <Text style={styles.loginButtonText}>🔐 Đăng nhập ngay</Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -168,22 +232,46 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
   },
+  loginButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 15,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
   backButton: {
     backgroundColor: "#6c757d",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   backButtonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  messageBox: {
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 15,
+    alignItems: "center",
+  },
+  successBox: {
+    backgroundColor: "#d4edda",
+  },
+  errorBox: {
+    backgroundColor: "#f8d7da",
+  },
+  messageText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
   },
 });
 
