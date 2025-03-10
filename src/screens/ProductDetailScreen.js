@@ -76,7 +76,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
               : imageUrl,
           }}
           style={styles.carouselImage}
-          onError={(e) => console.error("Lỗi tải ảnh:", e.nativeEvent.error)}
         />
       </View>
     );
@@ -96,18 +95,20 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
       <View style={styles.productInfo}>
         <Text style={styles.title}>
-          <MaterialIcons name="sports-tennis" size={22} color="#ff8c00" />{" "}
+          <MaterialIcons name="sports-tennis" size={24} color="#ff8c00" />{" "}
           {product.name}
         </Text>
 
         <Text style={styles.category}>
-          <MaterialIcons name="category" size={20} color="#007bff" />{" "}
+          <MaterialIcons name="category" size={22} color="#007bff" />{" "}
           {product.category.name}
         </Text>
 
         <Text style={styles.material}>
           Nguyên liệu:{" "}
-          <Text style={{ fontWeight: "bold" }}>{product.material}</Text>
+          <Text style={{ fontWeight: "bold", color: "#333" }}>
+            {product.material}
+          </Text>
         </Text>
 
         <Text style={styles.description}>{product.description}</Text>
@@ -163,15 +164,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   carousel: {
-    height: 500,
+    height: 400,
     marginBottom: 10,
   },
   imageContainer: {
-    width: width - 40,
-    height: 500,
-    marginHorizontal: 10,
-    borderRadius: 15,
+    width: width - 30,
+    height: 400,
+    marginHorizontal: 15,
+    borderRadius: 20,
     overflow: "hidden",
+    backgroundColor: "#ddd",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -208,9 +210,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     marginBottom: 10,
+    lineHeight: 22,
   },
   price: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#e63946",
     marginTop: 10,
@@ -221,11 +224,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
-    shadowColor: "#ff8c00",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
   },
   buttonText: {
     color: "#fff",

@@ -12,6 +12,7 @@ import {
   TextInput,
 } from "react-native";
 import axios from "axios";
+import { Ionicons } from "@expo/vector-icons";
 
 const BASE_URL = "http://localhost:9999";
 
@@ -23,6 +24,7 @@ const CategoryProductsScreen = ({ route, navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [filterPrice, setFilterPrice] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -51,10 +53,17 @@ const CategoryProductsScreen = ({ route, navigation }) => {
 
   const applyFilter = () => {
     const filtered = products.filter(
-      (item) => filterPrice === "" || item.price <= parseFloat(filterPrice)
+      (item) =>
+        (filterPrice === "" || item.price <= parseFloat(filterPrice)) &&
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProducts(filtered);
     setModalVisible(false);
+  };
+
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+    applyFilter();
   };
 
   if (loading) {
@@ -68,6 +77,20 @@ const CategoryProductsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Sản phẩm theo danh mục</Text>
+      <View style={styles.searchContainer}>
+        <Ionicons
+          name="search"
+          size={20}
+          color="#777"
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Tìm kiếm sản phẩm..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+      </View>
       <TouchableOpacity
         style={styles.filterButton}
         onPress={() => setModalVisible(true)}
@@ -137,7 +160,16 @@ const CategoryProductsScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff", padding: 10 },
   header: { fontSize: 22, fontWeight: "bold", marginBottom: 10, color: "#333" },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f1f1f1",
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  searchIcon: { marginRight: 8 },
+  searchInput: { flex: 1, fontSize: 16 },
   noData: { fontSize: 16, color: "#777", textAlign: "center", marginTop: 20 },
   productItem: {
     backgroundColor: "#fff",
@@ -184,36 +216,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   filterButtonText: { color: "#fff", fontWeight: "bold" },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-    alignItems: "center",
-  },
-  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  },
-  applyButton: {
-    backgroundColor: "#007bff",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
-  },
-  applyButtonText: { color: "#fff", fontWeight: "bold" },
 });
 
 export default CategoryProductsScreen;

@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  TextInput,
 } from "react-native";
 import axios from "axios";
 
@@ -19,6 +20,7 @@ const HomeScreen = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +46,11 @@ const HomeScreen = ({ navigation }) => {
       </View>
     );
   }
+
+  // Lọc sản phẩm theo từ khóa tìm kiếm
+  const filteredProducts = products.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderCategoryItem = ({ item }) => (
     <TouchableOpacity
@@ -85,6 +92,14 @@ const HomeScreen = ({ navigation }) => {
       {/* Banner */}
       <Image source={require("../images/banner.png")} style={styles.banner} />
 
+      {/* Ô tìm kiếm */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="🔍 Tìm kiếm sản phẩm..."
+        value={searchQuery}
+        onChangeText={(text) => setSearchQuery(text)}
+      />
+
       {/* Danh mục sản phẩm */}
       <Text style={styles.sectionTitle}>Danh mục sản phẩm</Text>
       <FlatList
@@ -100,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Sản phẩm nổi bật</Text>
       <FlatList
         horizontal
-        data={products}
+        data={filteredProducts}
         keyExtractor={(item) => item._id}
         renderItem={renderProductItem}
         showsHorizontalScrollIndicator={false}
@@ -146,6 +161,15 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 20,
   },
+  searchInput: {
+    height: 40,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    marginBottom: 15,
+  },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "bold",
@@ -171,11 +195,11 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: "100%",
-    height: 180,
+    height: 290,
     borderRadius: 10,
     marginBottom: 10,
   },
-  productName: { fontSize: 18, fontWeight: "bold", color: "#333" },
+  productName: { fontSize: 14, fontWeight: "bold", color: "#333" },
   productDescription: { fontSize: 14, color: "#777", marginBottom: 10 },
   productPrice: { fontSize: 16, fontWeight: "bold", color: "#e63946" },
   detailButton: {
