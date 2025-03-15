@@ -51,20 +51,16 @@ const CategoryProductsScreen = ({ route, navigation }) => {
     setRefreshing(false);
   };
 
-  const applyFilter = () => {
+  // Lọc sản phẩm dựa trên tìm kiếm và giá tối đa
+  useEffect(() => {
+    const maxPrice = parseFloat(filterPrice) || Infinity;
     const filtered = products.filter(
       (item) =>
-        (filterPrice === "" || item.price <= parseFloat(filterPrice)) &&
+        item.price <= maxPrice &&
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProducts(filtered);
-    setModalVisible(false);
-  };
-
-  const handleSearch = (text) => {
-    setSearchQuery(text);
-    applyFilter();
-  };
+  }, [searchQuery, filterPrice, products]);
 
   if (loading) {
     return (
@@ -77,6 +73,8 @@ const CategoryProductsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Sản phẩm theo danh mục</Text>
+
+      {/* Ô tìm kiếm */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -88,15 +86,18 @@ const CategoryProductsScreen = ({ route, navigation }) => {
           style={styles.searchInput}
           placeholder="Tìm kiếm sản phẩm..."
           value={searchQuery}
-          onChangeText={handleSearch}
+          onChangeText={setSearchQuery}
         />
       </View>
+
+      {/* Nút lọc sản phẩm */}
       <TouchableOpacity
         style={styles.filterButton}
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.filterButtonText}>Lọc sản phẩm</Text>
       </TouchableOpacity>
+
       {filteredProducts.length === 0 ? (
         <Text style={styles.noData}>Không có sản phẩm nào.</Text>
       ) : (
@@ -131,6 +132,8 @@ const CategoryProductsScreen = ({ route, navigation }) => {
           }
         />
       )}
+
+      {/* Modal lọc sản phẩm */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -147,7 +150,10 @@ const CategoryProductsScreen = ({ route, navigation }) => {
               value={filterPrice}
               onChangeText={setFilterPrice}
             />
-            <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
+            <TouchableOpacity
+              style={styles.applyButton}
+              onPress={() => setModalVisible(false)}
+            >
               <Text style={styles.applyButtonText}>Áp dụng</Text>
             </TouchableOpacity>
           </View>
@@ -216,6 +222,47 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   filterButtonText: { color: "#fff", fontWeight: "bold" },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#333",
+  },
+  input: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  applyButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 12,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  applyButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
 
 export default CategoryProductsScreen;

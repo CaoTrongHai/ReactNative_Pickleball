@@ -46,10 +46,12 @@ const LoginScreen = () => {
 
       setIsLoading(false);
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Home" }],
-      });
+      // Kiểm tra username và chuyển hướng
+      if (user.username === "admin") {
+        navigation.navigate("Admin"); // Sử dụng navigate để giữ lại màn hình đăng nhập trong stack
+      } else {
+        navigation.navigate("Home"); // Sử dụng navigate để giữ lại màn hình đăng nhập trong stack
+      }
     } catch (error) {
       setIsLoading(false);
       setErrorMessage(error.response?.data?.message || "Đăng nhập thất bại");

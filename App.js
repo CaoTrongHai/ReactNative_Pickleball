@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -15,77 +15,75 @@ import CategoryProductsScreen from "./src/screens/CategoryProductScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
 import CartScreen from "./src/screens/CartScreen";
+import AdminScreen from "./src/screens/AdminScreen";
+
 const Stack = createStackNavigator();
 
 const App = () => {
+  const [showHeaderFooter, setShowHeaderFooter] = useState(true);
+
   return (
     <NavigationContainer>
       <View style={styles.container}>
         {/* Header */}
-        <View style={styles.header}>
-          <Header />
-        </View>
+        {showHeaderFooter && (
+          <View style={styles.header}>
+            <Header />
+          </View>
+        )}
 
         {/* Nội dung chính */}
-        <View style={styles.content}>
-          <Stack.Navigator initialRouteName="Home">
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ title: "Trang chủ", headerShown: false }}
-            />
+        <View
+          style={[
+            styles.content,
+            !showHeaderFooter && styles.contentFullScreen,
+          ]}
+        >
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              headerShown: false, // Ẩn header mặc định của navigator
+            }}
+          >
+            <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen
               name="ProductDetail"
               component={ProductDetailScreen}
-              options={{ title: "Chi tiết sản phẩm", headerShown: false }}
             />
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ title: "Đăng nhập", headerShown: false }}
-            />
-            <Stack.Screen
-              name="Register"
-              component={RegisterScreen}
-              options={{ title: "Đăng ký", headerShown: false }}
-            />
-            <Stack.Screen
-              name="Contact"
-              component={ContactScreen}
-              options={{ title: "Liên hệ", headerShown: false }}
-            />
-            <Stack.Screen
-              name="About"
-              component={AboutUsScreen}
-              options={{ title: "Giới thiệu", headerShown: false }}
-            />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Contact" component={ContactScreen} />
+            <Stack.Screen name="About" component={AboutUsScreen} />
             <Stack.Screen
               name="CategoryProducts"
               component={CategoryProductsScreen}
-              options={{ title: "Sản phẩm" }}
             />
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{ title: "Hồ sơ" }}
-            />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen
               name="ResetPassword"
               component={ResetPasswordScreen}
-              options={{ title: "Quên mật khẩu" }}
             />
+            <Stack.Screen name="Cart" component={CartScreen} />
             <Stack.Screen
-              name="Cart"
-              component={CartScreen}
-              options={{ title: "Giỏ hàng" }}
+              name="Admin"
+              component={AdminScreen}
+              listeners={({ navigation }) => ({
+                focus: () => {
+                  setShowHeaderFooter(false);
+                  navigation.setOptions({ headerShown: false });
+                },
+                blur: () => setShowHeaderFooter(true),
+              })}
             />
           </Stack.Navigator>
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
-          <Footer />
-        </View>
+        {showHeaderFooter && (
+          <View style={styles.footer}>
+            <Footer />
+          </View>
+        )}
       </View>
     </NavigationContainer>
   );
@@ -96,13 +94,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 60,
+    height: 60, // Chiều cao của Header
   },
   content: {
-    flex: 1,
+    flex: 1, // Chiếm phần còn lại của màn hình
+  },
+  contentFullScreen: {
+    flex: 1, // Đảm bảo chiếm toàn bộ màn hình khi ẩn Header/Footer
+    marginTop: 0,
+    marginBottom: 0,
   },
   footer: {
-    height: 50,
+    height: 50, // Chiều cao của Footer
   },
 });
 
