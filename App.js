@@ -16,6 +16,7 @@ import ProfileScreen from "./src/screens/ProfileScreen";
 import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
 import CartScreen from "./src/screens/CartScreen";
 import AdminScreen from "./src/screens/AdminScreen";
+import { AuthProvider } from "./src/context/AuthContext"; // Import AuthProvider
 
 const Stack = createStackNavigator();
 
@@ -23,69 +24,73 @@ const App = () => {
   const [showHeaderFooter, setShowHeaderFooter] = useState(true);
 
   return (
-    <NavigationContainer>
-      <View style={styles.container}>
-        {/* Header */}
-        {showHeaderFooter && (
-          <View style={styles.header}>
-            <Header />
-          </View>
-        )}
+    <AuthProvider>
+      {" "}
+      {/* Wrap entire app with AuthProvider */}
+      <NavigationContainer>
+        <View style={styles.container}>
+          {/* Header */}
+          {showHeaderFooter && (
+            <View style={styles.header}>
+              <Header />
+            </View>
+          )}
 
-        {/* Nội dung chính */}
-        <View
-          style={[
-            styles.content,
-            !showHeaderFooter && styles.contentFullScreen,
-          ]}
-        >
-          <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-              headerShown: false, // Ẩn header mặc định của navigator
-            }}
+          {/* Nội dung chính */}
+          <View
+            style={[
+              styles.content,
+              !showHeaderFooter && styles.contentFullScreen,
+            ]}
           >
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen
-              name="ProductDetail"
-              component={ProductDetailScreen}
-            />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="Contact" component={ContactScreen} />
-            <Stack.Screen name="About" component={AboutUsScreen} />
-            <Stack.Screen
-              name="CategoryProducts"
-              component={CategoryProductsScreen}
-            />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen
-              name="ResetPassword"
-              component={ResetPasswordScreen}
-            />
-            <Stack.Screen name="Cart" component={CartScreen} />
-            <Stack.Screen
-              name="Admin"
-              component={AdminScreen}
-              listeners={({ navigation }) => ({
-                focus: () => {
-                  setShowHeaderFooter(false);
-                  navigation.setOptions({ headerShown: false });
-                },
-                blur: () => setShowHeaderFooter(true),
-              })}
-            />
-          </Stack.Navigator>
-        </View>
-
-        {/* Footer */}
-        {showHeaderFooter && (
-          <View style={styles.footer}>
-            <Footer />
+            <Stack.Navigator
+              initialRouteName="Home"
+              screenOptions={{
+                headerShown: false, // Ẩn header mặc định của navigator
+              }}
+            >
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen
+                name="ProductDetail"
+                component={ProductDetailScreen}
+              />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Register" component={RegisterScreen} />
+              <Stack.Screen name="Contact" component={ContactScreen} />
+              <Stack.Screen name="About" component={AboutUsScreen} />
+              <Stack.Screen
+                name="CategoryProducts"
+                component={CategoryProductsScreen}
+              />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
+              <Stack.Screen
+                name="ResetPassword"
+                component={ResetPasswordScreen}
+              />
+              <Stack.Screen name="Cart" component={CartScreen} />
+              <Stack.Screen
+                name="Admin"
+                component={AdminScreen}
+                listeners={({ navigation }) => ({
+                  focus: () => {
+                    setShowHeaderFooter(false);
+                    navigation.setOptions({ headerShown: false });
+                  },
+                  blur: () => setShowHeaderFooter(true),
+                })}
+              />
+            </Stack.Navigator>
           </View>
-        )}
-      </View>
-    </NavigationContainer>
+
+          {/* Footer */}
+          {showHeaderFooter && (
+            <View style={styles.footer}>
+              <Footer />
+            </View>
+          )}
+        </View>
+      </NavigationContainer>
+    </AuthProvider>
   );
 };
 

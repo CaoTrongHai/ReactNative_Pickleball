@@ -10,11 +10,12 @@ import {
   ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // Import custom hook
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const { signIn } = useAuth(); // Get signIn function from context
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,19 +39,17 @@ const LoginScreen = () => {
 
       const { token, user } = response.data;
 
-      await AsyncStorage.setItem("token", token);
-      await AsyncStorage.setItem("username", user.username);
-      await AsyncStorage.setItem("userId", user._id);
+      // Use the signIn function from context
+      const username = await signIn(token, user);
 
       Alert.alert("Thành công", "Đăng nhập thành công");
-
       setIsLoading(false);
 
       // Kiểm tra username và chuyển hướng
-      if (user.username === "admin") {
-        navigation.navigate("Admin"); // Sử dụng navigate để giữ lại màn hình đăng nhập trong stack
+      if (username === "admin") {
+        navigation.navigate("Admin");
       } else {
-        navigation.navigate("Home"); // Sử dụng navigate để giữ lại màn hình đăng nhập trong stack
+        navigation.navigate("Home");
       }
     } catch (error) {
       setIsLoading(false);
@@ -60,7 +59,7 @@ const LoginScreen = () => {
 
   return (
     <ImageBackground
-      source={require("../images/backgroundLogin.png")} // Đặt đường dẫn ảnh nền
+      source={require("../images/backgroundLogin.png")}
       style={styles.background}
       resizeMode="cover"
     >
@@ -124,14 +123,14 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ tối giúp chữ dễ đọc hơn
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
   container: {
     width: "90%",
     padding: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.9)", // Làm mờ background giúp nội dung nổi bật hơn
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 10,
     alignItems: "center",
   },

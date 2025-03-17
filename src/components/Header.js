@@ -1,27 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext"; // Import custom hook
 
 const Header = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchUser = async () => {
-        const storedUsername = await AsyncStorage.getItem("username");
-        setUsername(storedUsername);
-      };
-      fetchUser();
-    }, [])
-  );
+  const { username, signOut } = useAuth(); // Get values from context
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("username");
-    await AsyncStorage.removeItem("userId");
-    setUsername(null);
+    await signOut(); // Use the signOut function from context
     navigation.reset({
       index: 0,
       routes: [{ name: "Login" }],
