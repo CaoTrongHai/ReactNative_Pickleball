@@ -16,6 +16,7 @@ import ProfileScreen from "./src/screens/ProfileScreen";
 import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
 import CartScreen from "./src/screens/CartScreen";
 import AdminScreen from "./src/screens/AdminScreen";
+import CheckoutScreen from "./src/screens/CheckoutScreen";
 import { AuthProvider } from "./src/context/AuthContext"; // Import AuthProvider
 
 const Stack = createStackNavigator();
@@ -68,6 +69,8 @@ const App = () => {
                 component={ResetPasswordScreen}
               />
               <Stack.Screen name="Cart" component={CartScreen} />
+              <Stack.Screen name="CheckOut" component={CheckoutScreen} />
+
               <Stack.Screen
                 name="Admin"
                 component={AdminScreen}

@@ -126,7 +126,7 @@ const CartScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.checkoutButton}
-          onPress={() => Alert.alert("Mua hàng", "Chức năng đang phát triển")}
+          onPress={() => navigation.navigate("CheckOut")}
         >
           <Text style={styles.checkoutText}>Thanh Toán</Text>
         </TouchableOpacity>
