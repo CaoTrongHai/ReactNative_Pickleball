@@ -6,11 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Image,
   ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import QRCode from "react-native-qrcode-svg"; // Import the QR code library
 
 const CheckoutScreen = ({ navigation }) => {
   const [cartItems, setCartItems] = useState([]);
@@ -137,6 +137,30 @@ const CheckoutScreen = ({ navigation }) => {
           </Text>
         </View>
 
+        {/* Thông tin chuyển khoản và QR Code */}
+        <View style={styles.paymentContainer}>
+          {/* Thông tin chuyển khoản */}
+          <View style={styles.bankInfoContainer}>
+            <Text style={styles.sectionTitle}>Thông tin chuyển khoản</Text>
+            <Text style={styles.bankInfoText}>CHỦ TÀI KHOẢN: CAO TRỌNG HẢI</Text>
+            <Text style={styles.bankInfoText}>Số TK: 6666977652003</Text>
+            <Text style={styles.bankInfoText}>NGÂN HÀNG: MB BANK</Text>
+            <Text style={styles.bankInfoText}>
+              NỘI DUNG: THANHTOAN {totalPrice}
+            </Text>
+          </View>
+
+          {/* QR Code */}
+          <View style={styles.qrCodeContainer}>
+            <QRCode
+              value={`Total Amount: ${totalPrice.toLocaleString()} đ`}
+              size={150}
+              color="black"
+              backgroundColor="white"
+            />
+          </View>
+        </View>
+
         {/* Nút thanh toán */}
         <TouchableOpacity
           style={styles.checkoutButton}
@@ -199,12 +223,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-  productImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 15,
-  },
   productInfo: { flex: 1 },
   productName: { fontSize: 16, fontWeight: "bold", color: "#333" },
   productPrice: { fontSize: 14, color: "#ff5722", marginTop: 5 },
@@ -224,6 +242,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
     textAlign: "right",
+  },
+  paymentContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  bankInfoContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  bankInfoText: {
+    fontSize: 16,
+    color: "#555",
+    marginBottom: 5,
+  },
+  qrCodeContainer: {
+    alignItems: "center",
   },
   checkoutButton: {
     backgroundColor: "#6200ee",

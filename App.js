@@ -18,6 +18,7 @@ import CartScreen from "./src/screens/CartScreen";
 import AdminScreen from "./src/screens/AdminScreen";
 import CheckoutScreen from "./src/screens/CheckoutScreen";
 import { AuthProvider } from "./src/context/AuthContext"; // Import AuthProvider
+import NewsDetails from "./src/screens/NewsDetails";
 
 const Stack = createStackNavigator();
 
@@ -70,6 +71,7 @@ const App = () => {
               />
               <Stack.Screen name="Cart" component={CartScreen} />
               <Stack.Screen name="CheckOut" component={CheckoutScreen} />
+              <Stack.Screen name="NewsDetail" component={NewsDetails} />
 
               <Stack.Screen
                 name="Admin"
